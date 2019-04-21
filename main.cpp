@@ -20,6 +20,15 @@ struct program_args {
 	}
 };
 
+enum main_return_code {
+	success,
+	missing_arguments,
+	could_not_parse,
+	exception,
+	unknown_exception,
+	bad_brightness,
+};
+
 void print_usage(const program_args args)
 {
 	const auto prg_name = [&] {
@@ -52,7 +61,7 @@ int main(const int argc, const char** const argv)
 	if(argc != 3) {
 		std::cout << "Missing argument(s).\n";
 		print_usage({argc, argv});
-		return 1;
+		return main_return_code::missing_arguments;
 	}
 
 	auto device_name = argv[1];
@@ -61,7 +70,7 @@ int main(const int argc, const char** const argv)
 	if(!brightness_opt.has_value()) {
 		std::cout << "Couldn't parse brightness value.\n";
 		print_usage({argc, argv});
-		return 2;
+		return main_return_code::could_not_parse;
 	}
 
 	auto brightness = brightness_opt.value();
@@ -69,7 +78,7 @@ int main(const int argc, const char** const argv)
 	if(std::isnan(brightness) || std::isinf(brightness) || brightness < 0.0 || brightness > 100.0) {
 		std::cout << "Bad brightness value.\n";
 		print_usage({argc, argv});
-		return 5;
+		return main_return_code::bad_brightness;
 	}
 
 
@@ -89,10 +98,10 @@ int main(const int argc, const char** const argv)
 		set_brightness(brightness, base_path);
 	} catch(const std::exception& ex) {
 		std::cerr << "exception: " << ex.what() << '\n';
-		return 3;
+		return main_return_code::exception;
 	} catch(...) {
 		std::cerr << "unknown exception\n";
-		return 4;
+		return main_return_code::unknown_exception;
 	}
 }
 
