@@ -2,6 +2,8 @@
 #include <fstream>
 #include <optional>
 #include <cstring>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 // todo replace strtod to from_chars when available in gcc
 #include <cmath>
@@ -42,7 +44,7 @@ std::optional<double> chartodouble(const char* const begin, const char* const en
 	return value;
 }
 
-void set_brightness(double brightness, const char* device);
+void set_brightness(double brightness, const fs::path& base_path);
 
 int main(const int argc, const char** const argv)
 {
@@ -63,7 +65,19 @@ int main(const int argc, const char** const argv)
 	auto brightness = brightness_opt.value();
 
 	try {
-		set_brightness(brightness, "intel_backlight");
+		const auto class_path = fs::path{"/sys/class/backlight"};
+		const auto base_path = class_path / "intel_backlight";
+
+		if(base_path.parent_path() != class_path) {
+			throw std::runtime_error{"non-relative device name."};
+		}
+
+		if(!fs::exists(base_path)) {
+			throw std::runtime_error{base_path.string() + " does not exist."};
+		}
+
+		// all checks succeeded, set the brightness
+		set_brightness(brightness, base_path);
 	} catch(const std::exception& ex) {
 		std::cerr << "exception: " << ex.what() << '\n';
 		return 3;
@@ -73,29 +87,27 @@ int main(const int argc, const char** const argv)
 	}
 }
 
-int get_max_brightness(const std::string& base_path)
+int get_max_brightness(const fs::path& base_path)
 {
-	const auto path = base_path + "/max_brightness";
+	const auto path = base_path / "max_brightness";
 
 	std::ifstream in{path};
 	if(!in.is_open()) {
-		throw std::runtime_error{"could not open max_brightness (" + path + ")."};
+		throw std::runtime_error{"could not open max_brightness (" + path.string() + ")."};
 	}
 
 	int value = 0;
 	in >> value;
 
 	if(in.fail() || in.eof()) {
-		throw std::runtime_error{"could not read max_brightness (" + path + ")."};
+		throw std::runtime_error{"could not read max_brightness (" + path.string() + ")."};
 	}
 
 	return value;
 }
 
-void set_brightness(const double brightness, const char* const device)
+void set_brightness(const double brightness, const fs::path& base_path)
 {
-	const auto base_path = "/sys/class/backlight/" + std::string{device};
-
 	if(std::isnan(brightness))
 		throw std::out_of_range{"brightness brightness is NaN."};
 
@@ -107,12 +119,12 @@ void set_brightness(const double brightness, const char* const device)
 
 	const auto max = get_max_brightness(base_path);
 
-	const auto path = base_path + "/brightness";
+	const auto path = base_path / "brightness";
 
 	std::ofstream out{path};
 
 	if(!out.is_open()) {
-		throw std::runtime_error{"could not open brightness (" + path + ")."};
+		throw std::runtime_error{"could not open brightness (" + path.string() + ")."};
 	}
 
 	const auto real_brightness = static_cast<int>(brightness * max / 100.0);
@@ -121,6 +133,6 @@ void set_brightness(const double brightness, const char* const device)
 	out << real_brightness;
 
 	if(out.fail() || out.eof()) {
-		throw std::runtime_error{"could not write brightness (" + path + ")."};
+		throw std::runtime_error{"could not write brightness (" + path.string() + ")."};
 	}
 }
