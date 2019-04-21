@@ -3,7 +3,7 @@
 #include <optional>
 #include <cstring>
 
-// todo replace strtod to from_chars
+// todo replace strtod to from_chars when available in gcc
 #include <cmath>
 #include <cstdlib>
 
