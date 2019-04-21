@@ -25,7 +25,7 @@ I have a `bri` script in my `PATH` with this contents:
 ```
 #!/bin/sh
 
-bridev intel_backlight "$1"
+bridev intel_backlight "$@"
 ```
 
 This lets me simply type `bri 30` to change my brightness.
