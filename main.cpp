@@ -37,9 +37,14 @@ void print_usage(const program_args args)
 	}();
 
 	std::cout << "Usage:\n";
+	std::cout << "Set brightness (prints before & after)\n";
 	std::cout << '\t' << prg_name << " device-name float-value\n\n";
 	std::cout << '\t' << "device-name: a device in /sys/class/backlight.\n";
 	std::cout << '\t' << "float-value: brightness value between 0 and 100.\n";
+
+	std::cout << "\nGet brightness (prints current brightness)\n";
+	std::cout << '\t' << prg_name << " device-name\n\n";
+	std::cout << '\t' << "device-name: a device in /sys/class/backlight.\n";
 }
 
 std::optional<double> chartodouble(const char* const begin, const char* const end)
@@ -59,31 +64,15 @@ void set_brightness(double brightness, const fs::path& base_path);
 
 int main(const int argc, const char** const argv)
 {
-	if(argc != 3) {
-		std::cout << "Missing argument(s).\n";
-		print_usage({argc, argv});
-		return main_return_code::missing_arguments;
-	}
-
-	auto device_name = argv[1];
-	auto brightness_opt = chartodouble(argv[2], argv[2] + std::strlen(argv[1]));
-
-	if(!brightness_opt.has_value()) {
-		std::cout << "Couldn't parse brightness value.\n";
-		print_usage({argc, argv});
-		return main_return_code::could_not_parse;
-	}
-
-	auto brightness = brightness_opt.value();
-
-	if(std::isnan(brightness) || std::isinf(brightness) || brightness < 0.0 || brightness > 100.0) {
-		std::cout << "Bad brightness value.\n";
-		print_usage({argc, argv});
-		return main_return_code::bad_brightness;
-	}
-
-
 	try {
+		if(argc < 2) {
+			std::cout << "Missing argument(s).\n";
+			print_usage({argc, argv});
+			return main_return_code::missing_arguments;
+		}
+
+		auto device_name = argv[1];
+
 		const auto class_path = fs::path{"/sys/class/backlight"};
 		const auto base_path = class_path / device_name;
 
@@ -93,6 +82,30 @@ int main(const int argc, const char** const argv)
 
 		if(!fs::exists(base_path)) {
 			throw std::runtime_error{base_path.string() + " does not exist."};
+		}
+
+		// checks ensure that base_path exists and is a sub-directory of class_path.
+
+		// no brightness argument passed, just print current brightness
+		if(argc < 3) {
+			std::cout << get_brightness(base_path) << '\n';
+			return main_return_code::success;
+		}
+
+		auto brightness_opt = chartodouble(argv[2], argv[2] + std::strlen(argv[1]));
+
+		if(!brightness_opt.has_value()) {
+			std::cout << "Couldn't parse brightness value.\n";
+			print_usage({argc, argv});
+			return main_return_code::could_not_parse;
+		}
+
+		auto brightness = brightness_opt.value();
+
+		if(std::isnan(brightness) || std::isinf(brightness) || brightness < 0.0 || brightness > 100.0) {
+			std::cout << "Bad brightness value.\n";
+			print_usage({argc, argv});
+			return main_return_code::bad_brightness;
 		}
 
 		const auto before = get_brightness(base_path);
