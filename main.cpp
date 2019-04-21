@@ -92,7 +92,7 @@ int main(const int argc, const char** const argv)
 			return main_return_code::success;
 		}
 
-		auto brightness_opt = chartodouble(argv[2], argv[2] + std::strlen(argv[1]));
+		auto brightness_opt = chartodouble(argv[2], argv[2] + std::strlen(argv[2]));
 
 		if(!brightness_opt.has_value()) {
 			std::cout << "Couldn't parse brightness value.\n";
