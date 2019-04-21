@@ -85,7 +85,7 @@ int get_max_brightness(const std::string& base_path)
 	int value = 0;
 	in >> value;
 
-	if(in.bad()) {
+	if(in.fail()) {
 		throw std::runtime_error{"could not read max_brightness (" + path + ")."};
 	}
 
@@ -120,7 +120,7 @@ void set_brightness(const double value, const char* const device)
 
 	out << real_value;
 
-	if(out.bad()) {
+	if(out.fail()) {
 		throw std::runtime_error{"could not write brightness (" + path + ")."};
 	}
 }
