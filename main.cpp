@@ -37,9 +37,9 @@ void print_usage(const program_args args)
 	}();
 
 	std::cout << "Usage:\n";
-	std::cout << prg_name << " device-name float-value\n\n";
-	std::cout << "device-name: a device in /sys/class/backlight.\n";
-	std::cout << "float-value: brightness value between 0 and 100.\n";
+	std::cout << '\t' << prg_name << " device-name float-value\n\n";
+	std::cout << '\t' << "device-name: a device in /sys/class/backlight.\n";
+	std::cout << '\t' << "float-value: brightness value between 0 and 100.\n";
 }
 
 std::optional<double> chartodouble(const char* const begin, const char* const end)
