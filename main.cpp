@@ -42,7 +42,7 @@ std::optional<double> chartodouble(const char* const begin, const char* const en
 	return value;
 }
 
-void set_brightness(double value, const char* device);
+void set_brightness(double brightness, const char* device);
 
 int main(const int argc, const char** const argv)
 {
@@ -52,18 +52,18 @@ int main(const int argc, const char** const argv)
 		return 1;
 	}
 
-	auto value_opt = chartodouble(argv[1], argv[1] + std::strlen(argv[1]));
+	auto brightness_opt = chartodouble(argv[1], argv[1] + std::strlen(argv[1]));
 
-	if(!value_opt.has_value()) {
-		std::cout << "Bad float value.\n";
+	if(!brightness_opt.has_value()) {
+		std::cout << "Bad float brightness.\n";
 		print_usage({argc, argv});
 		return 2;
 	}
 
-	auto value = value_opt.value();
+	auto brightness = brightness_opt.value();
 
 	try {
-		set_brightness(value, "intel_backlight");
+		set_brightness(brightness, "intel_backlight");
 	} catch(const std::exception& ex) {
 		std::cerr << "exception: " << ex.what() << '\n';
 		return 3;
@@ -92,17 +92,17 @@ int get_max_brightness(const std::string& base_path)
 	return value;
 }
 
-void set_brightness(const double value, const char* const device)
+void set_brightness(const double brightness, const char* const device)
 {
 	const auto base_path = "/sys/class/backlight/" + std::string{device};
 
-	if(std::isnan(value))
-		throw std::out_of_range{"brightness value is NaN."};
+	if(std::isnan(brightness))
+		throw std::out_of_range{"brightness brightness is NaN."};
 
-	if(std::isinf(value))
+	if(std::isinf(brightness))
 		throw std::out_of_range{"brightness value is INF."};
 
-	if(value < 0.0 || value > 100.0)
+	if(brightness < 0.0 || brightness > 100.0)
 		throw std::out_of_range{"brightness value is out of range."};
 
 	const auto max = get_max_brightness(base_path);
@@ -115,10 +115,10 @@ void set_brightness(const double value, const char* const device)
 		throw std::runtime_error{"could not open brightness (" + path + ")."};
 	}
 
-	const auto real_value = static_cast<int>(value * max / 100.0);
-	std::cout << real_value << '\n';
+	const auto real_brightness = static_cast<int>(brightness * max / 100.0);
+	std::cout << real_brightness << '\n';
 
-	out << real_value;
+	out << real_brightness;
 
 	if(out.fail() || out.eof()) {
 		throw std::runtime_error{"could not write brightness (" + path + ")."};
