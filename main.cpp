@@ -123,6 +123,8 @@ int main(const int argc, const char** const argv)
 		std::cerr << "unknown exception\n";
 		return main_return_code::unknown_exception;
 	}
+
+	return main_return_code::success;
 }
 
 int read_int_from_file(const fs::path& path)
