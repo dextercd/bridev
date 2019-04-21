@@ -91,9 +91,15 @@ int get_max_brightness(const std::string& base_path)
 void set_brightness(const double value, const char* const device)
 {
 	const auto base_path = "/sys/class/backlight/" + std::string{device};
-	if(value < 0.0 || value > 100.0) {
+
+	if(value < 0.0 || value > 100.0)
 		throw std::out_of_range{"brightness value is out of range."};
-	}
+
+	if(std::isnan(value))
+		throw std::out_of_range{"brightness value is NaN."};
+
+	if(std::isinf(value))
+		throw std::out_of_range{"brightness value is INF."};
 
 	auto max = get_max_brightness(base_path);
 
