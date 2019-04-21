@@ -72,13 +72,13 @@ int main(const int argc, const char** argv)
 int get_max_brightness(const std::string& base_path)
 {
 	const auto path = base_path + "/max_brightness";
-	int value = 0;
 
 	std::ifstream in{path};
 	if(!in.is_open()) {
 		throw std::runtime_error{"could not open max_brightness (" + path + ")."};
 	}
 
+	int value = 0;
 	in >> value;
 
 	if(in.bad()) {
