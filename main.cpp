@@ -131,14 +131,12 @@ int read_int_from_file(const fs::path& path)
 
 int get_brightness(const fs::path& base_path)
 {
-	const auto path = base_path / "brightness";
-	return read_int_from_file(path);
+	return read_int_from_file(base_path / "brightness");
 }
 
 int get_max_brightness(const fs::path& base_path)
 {
-	const auto path = base_path / "max_brightness";
-	return read_int_from_file(path);
+	return read_int_from_file(base_path / "max_brightness");
 }
 
 void set_brightness(const double brightness, const fs::path& base_path)
