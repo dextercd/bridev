@@ -54,6 +54,7 @@ std::optional<double> chartodouble(const char* const begin, const char* const en
 	return value;
 }
 
+int get_brightness(const fs::path& base_path);
 void set_brightness(double brightness, const fs::path& base_path);
 
 int main(const int argc, const char** const argv)
@@ -105,23 +106,33 @@ int main(const int argc, const char** const argv)
 	}
 }
 
-int get_max_brightness(const fs::path& base_path)
+int read_int_from_file(const fs::path& path)
 {
-	const auto path = base_path / "max_brightness";
-
 	std::ifstream in{path};
 	if(!in.is_open()) {
-		throw std::runtime_error{"could not open max_brightness (" + path.string() + ")."};
+		throw std::runtime_error{"could not open " + path.string() + "."};
 	}
 
 	int value = 0;
 	in >> value;
 
 	if(in.fail() || in.eof()) {
-		throw std::runtime_error{"could not read max_brightness (" + path.string() + ")."};
+		throw std::runtime_error{"could not read from " + path.string() + "."};
 	}
 
 	return value;
+}
+
+int get_brightness(const fs::path& base_path)
+{
+	const auto path = base_path / "brightness";
+	return read_int_from_file(path);
+}
+
+int get_max_brightness(const fs::path& base_path)
+{
+	const auto path = base_path / "max_brightness";
+	return read_int_from_file(path);
 }
 
 void set_brightness(const double brightness, const fs::path& base_path)
