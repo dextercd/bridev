@@ -66,6 +66,7 @@ int main(const int argc, const char** argv)
 		set_brightness(value, "intel_backlight");
 	} catch(const std::exception& ex) {
 		std::cerr << "exception: " << ex.what() << '\n';
+		return 3;
 	}
 }
 
