@@ -21,7 +21,7 @@ struct program_args {
 void print_usage(program_args args)
 {
 	const auto prg_name = [&] {
-		if(args.argc == 1) return args.argv[0];
+		if(args.argc >= 1) return args.argv[0];
 		return "./bri";
 	}();
 
