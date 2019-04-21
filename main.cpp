@@ -27,7 +27,7 @@ void print_usage(program_args args)
 
 	std::cout << "Usage:\n";
 	std::cout << prg_name << " float-value\n\n";
-	std::cout << "float-value must be between 0 and 100";
+	std::cout << "float-value must be between 0 and 100.\n";
 }
 
 std::optional<double> chartodouble(const char* begin, const char* end)
