@@ -28,8 +28,9 @@ void print_usage(const program_args args)
 	}();
 
 	std::cout << "Usage:\n";
-	std::cout << prg_name << " float-value\n\n";
-	std::cout << "float-value must be between 0 and 100.\n";
+	std::cout << prg_name << " device-name float-value\n\n";
+	std::cout << "device-name: a device in /sys/class/backlight.\n";
+	std::cout << "float-value: brightness value between 0 and 100.\n";
 }
 
 std::optional<double> chartodouble(const char* const begin, const char* const end)
@@ -48,13 +49,14 @@ void set_brightness(double brightness, const fs::path& base_path);
 
 int main(const int argc, const char** const argv)
 {
-	if(argc != 2) {
+	if(argc != 3) {
 		std::cout << "Missing argument(s).\n";
 		print_usage({argc, argv});
 		return 1;
 	}
 
-	auto brightness_opt = chartodouble(argv[1], argv[1] + std::strlen(argv[1]));
+	auto device_name = argv[1];
+	auto brightness_opt = chartodouble(argv[2], argv[2] + std::strlen(argv[1]));
 
 	if(!brightness_opt.has_value()) {
 		std::cout << "Bad float brightness.\n";
@@ -66,7 +68,7 @@ int main(const int argc, const char** const argv)
 
 	try {
 		const auto class_path = fs::path{"/sys/class/backlight"};
-		const auto base_path = class_path / "intel_backlight";
+		const auto base_path = class_path / device_name;
 
 		if(base_path.parent_path() != class_path) {
 			throw std::runtime_error{"non-relative device name."};
