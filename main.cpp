@@ -95,8 +95,14 @@ int main(const int argc, const char** const argv)
 			throw std::runtime_error{base_path.string() + " does not exist."};
 		}
 
+		const auto before = get_brightness(base_path);
+
 		// all checks succeeded, set the brightness
 		set_brightness(brightness, base_path);
+
+		const auto after = get_brightness(base_path);
+		std::cout << before << " -> " << after << '\n';
+
 	} catch(const std::exception& ex) {
 		std::cerr << "exception: " << ex.what() << '\n';
 		return main_return_code::exception;
@@ -148,7 +154,6 @@ void set_brightness(const double brightness, const fs::path& base_path)
 	}
 
 	const auto real_brightness = static_cast<int>(brightness * max / 100.0);
-	std::cout << real_brightness << '\n';
 
 	out << real_brightness;
 
