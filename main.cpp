@@ -33,7 +33,7 @@ void print_usage(const program_args args)
 {
 	const auto prg_name = [&] {
 		if(args.argc >= 1) return args.argv[0];
-		return "./bri";
+		return "./bridev";
 	}();
 
 	std::cout << "Usage:\n";
