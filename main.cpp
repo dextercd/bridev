@@ -67,6 +67,9 @@ int main(const int argc, const char** argv)
 	} catch(const std::exception& ex) {
 		std::cerr << "exception: " << ex.what() << '\n';
 		return 3;
+	} catch(...) {
+		std::cerr << "unknown exception\n";
+		return 4;
 	}
 }
 
