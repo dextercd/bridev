@@ -11,14 +11,14 @@ struct program_args {
 	int argc;
 	const char** argv;
 
-	program_args(int c, const char** v)
+	program_args(const int c, const char** const v)
 		: argc{c}
 		, argv{v}
 	{
 	}
 };
 
-void print_usage(program_args args)
+void print_usage(const program_args args)
 {
 	const auto prg_name = [&] {
 		if(args.argc >= 1) return args.argv[0];
@@ -30,10 +30,10 @@ void print_usage(program_args args)
 	std::cout << "float-value must be between 0 and 100.\n";
 }
 
-std::optional<double> chartodouble(const char* begin, const char* end)
+std::optional<double> chartodouble(const char* const begin, const char* const end)
 {
 	char* vend;
-	auto value = std::strtod(begin, &vend);
+	const auto value = std::strtod(begin, &vend);
 
 	if(vend == begin || value == HUGE_VAL) {
 		return std::nullopt;
@@ -44,7 +44,7 @@ std::optional<double> chartodouble(const char* begin, const char* end)
 
 void set_brightness(double value, const char* device);
 
-int main(const int argc, const char** argv)
+int main(const int argc, const char** const argv)
 {
 	if(argc != 2) {
 		std::cout << "Missing argument(s).\n";
